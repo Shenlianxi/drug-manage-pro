@@ -18,11 +18,13 @@ public class DrugCategory {
     private Integer categoryId;
 //    类名
     private String categoryName;
-
+//描述
+    private String categoryDesc;
     public DrugCategory() {
     }
 
-    public DrugCategory(String categoryName) {
+    public DrugCategory(String categoryName, String categoryDesc) {
         this.categoryName = categoryName;
+        this.categoryDesc = categoryDesc;
     }
 }

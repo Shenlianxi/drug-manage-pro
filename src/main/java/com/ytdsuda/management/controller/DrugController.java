@@ -61,9 +61,9 @@ public class DrugController {
     * */
     @PostMapping("update")
     public ResultVO update (@RequestParam(value = "drugId") String drugId,
-                            @RequestParam(value = "category", required = false) String category,
-                            @RequestParam(value = "price", required = false) Float price,
-                            @RequestParam(value = "resource", required = false) String resource,
+                            @RequestParam(value = "drugCategory", required = false) String category,
+                            @RequestParam(value = "drugPrice", required = false) Float price,
+                            @RequestParam(value = "drugResource", required = false) String resource,
                             @RequestParam(value = "drugFunction", required = false) String drugFunction,
                             @RequestParam(value = "drugIcon", required = false) String drugIcon) {
         ResultVO resultVO = new ResultVO();
@@ -167,7 +167,7 @@ public class DrugController {
         DrugDetail detailresult = drugService.stockManage(drugId, count, type);
         if (detailresult != null) {
             stockVO.setDrugName(detailresult.getDrugName());
-            String info = type == 1 ? ("入库" + count) : ("出库" + count);
+            String info = type == 1 ? ("入库数量" + count) : ("出库数量" + count);
             stockVO.setStockInfo(info);
             resultVO.setData(stockVO);
         } else {

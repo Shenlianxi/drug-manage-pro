@@ -9,3 +9,7 @@ spring:
 server:
   servlet:
     context-path: /dms
+mybatis:
+  mapper-locations:
+    classpath: mapper/*.xml
+  type-aliases-package: com.ytdsuda.management.entity
