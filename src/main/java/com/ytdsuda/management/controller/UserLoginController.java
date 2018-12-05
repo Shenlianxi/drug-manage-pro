@@ -22,6 +22,10 @@ public class UserLoginController {
         if (results.size() == 1) {
             User userResult = results.get(0);
             if (userResult.getUserPassword().equals(password)) {
+                User resultData = new User();
+                resultData.setUserName(userResult.getUserName());
+                resultData.setUserRole(userResult.getUserRole());
+                resultVO.setData(resultData);
                 resultVO.setSuccess(true);
             } else {
                 resultVO.setSuccess(false);
