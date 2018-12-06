@@ -21,4 +21,10 @@ public class UserServiceImpl implements UserService {
     public List<User> findUser(String userName) {
         return userRepository.findByUserNameIn(userName);
     }
+
+    @Override
+    public User updateInfo(User user) {
+        return userRepository.save(user);
+    }
+
 }

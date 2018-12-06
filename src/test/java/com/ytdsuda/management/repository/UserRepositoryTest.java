@@ -19,8 +19,8 @@ public class UserRepositoryTest {
 
     @Test
     public void testSave() {
-        User user = new User("superAdmin", "123456", "超级管理员");
-        repository.save(user);
+//        User user = new User("superAdmin", "123456", "超级管理员");
+//        repository.save(user);
     }
     @Test
     public void findByUserNameIn() {

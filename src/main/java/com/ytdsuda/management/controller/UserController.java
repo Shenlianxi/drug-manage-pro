@@ -1,0 +1,116 @@
+package com.ytdsuda.management.controller;
+
+import com.ytdsuda.management.VO.ResultVO;
+import com.ytdsuda.management.entity.User;
+import com.ytdsuda.management.repository.UserRepository;
+import com.ytdsuda.management.service.UserService;
+import com.ytdsuda.management.service.impl.BasicInfoServiceImpl;
+import com.ytdsuda.management.utils.ObjectUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.Assert;
+import org.springframework.web.bind.annotation.*;
+
+import javax.servlet.http.HttpSession;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
+
+@RestController
+@RequestMapping("/user")
+public class UserController {
+    @Autowired
+    private UserService userService;
+    @Autowired
+    private UserRepository userRepository;
+    @Autowired
+    private BasicInfoServiceImpl basicInfoService;
+    @PostMapping("login")
+    public ResultVO login(@RequestParam(value = "userName") String name, @RequestParam(value = "password") String password) {
+        List<User> results = userService.findUser(name);
+        ResultVO resultVO = new ResultVO();
+        resultVO.setData(null);
+        if (results.size() == 1) {
+            User userResult = results.get(0);
+            basicInfoService.updateStatus(userResult.getUserId());
+            if (userResult.getUserPassword().equals(password)) {
+                User resultData = new User();
+                resultData.setUserName(userResult.getUserName());
+                resultData.setUserRole(userResult.getUserRole());
+                resultVO.setData(resultData);
+                resultVO.setSuccess(true);
+            } else {
+                resultVO.setSuccess(false);
+                resultVO.setErrorMsg("用户名密码错");
+            }
+        }
+//        resultVO.setData(Arrays.asList(results));
+        return resultVO;
+    }
+
+    @GetMapping("getUser")
+    public ResultVO getUser() {
+        ResultVO resultVO = new ResultVO();
+        Integer currentUserId = basicInfoService.getCurrentUser();
+        Optional<User> user = userRepository.findById(currentUserId);
+        if (user.isPresent()) {
+            User userInfo = user.get();
+            userInfo.setUserPassword(null);
+            Boolean userExsist = ObjectUtils.isNotNull(userInfo) && ObjectUtils.isNotEmpty(userInfo);
+            if (userExsist) {
+                resultVO.setData(userInfo);
+            } else {
+                resultVO.setErrorMsg("查询用户失败");
+                resultVO.setSuccess(false);
+            }
+        }
+        return resultVO;
+    }
+
+    @PostMapping("saveProfile")
+    public ResultVO getUser(@RequestParam(value = "nickName", required = false) String nickName,
+                            @RequestParam(value = "position", required = false) String position,
+                            @RequestParam(value = "job", required = false) String job,
+                            @RequestParam(value = "age", required = false) Integer age) {
+        ResultVO resultVO = new ResultVO();
+        Integer userId = basicInfoService.getCurrentUser();
+        Optional<User> userOptional = userRepository.findById(userId);
+        User user = userOptional.get();
+        user.setUserId(userId);
+        user.setNickName(nickName);
+        user.setPosition(position);
+        user.setJob(job);
+        user.setAge(age);
+        User result = userRepository.save(user);
+        Boolean userExsist = ObjectUtils.isNotNull(result) && ObjectUtils.isNotEmpty(result);
+        if (userExsist) {
+            resultVO.setData("id:" + userId);
+        } else {
+            resultVO.setSuccess(false);
+            resultVO.setErrorMsg("录入失败");
+        }
+        return resultVO;
+    }
+    @PostMapping("changePassword")
+    public ResultVO changePwd(@RequestParam(value = "oldPwd") String oldPwd,
+                              @RequestParam(value = "newPwd") String newPwd) {
+        ResultVO resultVO = new ResultVO();
+        Integer currentUserId = basicInfoService.getCurrentUser();
+        Optional<User> user = userRepository.findById(currentUserId);
+        if (user.isPresent()) {
+            User userInfo = user.get();
+            if (oldPwd.equals(userInfo.getUserPassword())) {
+                userInfo.setUserPassword(newPwd);
+                userRepository.save(userInfo);
+                resultVO.setData(userInfo.getUserId());
+            } else {
+                resultVO.setSuccess(false);
+                resultVO.setErrorMsg("原密码输入有误");
+            }
+        } else {
+            resultVO.setSuccess(false);
+            resultVO.setData("检索用户失败");
+        }
+        return resultVO;
+    }
+
+}

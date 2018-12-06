@@ -1,6 +1,7 @@
 package com.ytdsuda.management.entity;
 
 import lombok.Data;
+import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -9,6 +10,7 @@ import javax.persistence.Id;
 
 @Entity
 @Data
+@DynamicUpdate
 public class User {
 //    用户id,主键
     @Id
@@ -20,13 +22,16 @@ public class User {
     private String userPassword;
 //    角色
     private String userRole;
+//    昵称
+    private String nickName;
+//    部门
+    private String position;
+//    职位
+    private String job;
+//    age
+    private Integer age;
 
     public User() {
     }
 
-    public User(String userName, String userPassword, String userRole) {
-        this.userName = userName;
-        this.userPassword = userPassword;
-        this.userRole = userRole;
-    }
 }
