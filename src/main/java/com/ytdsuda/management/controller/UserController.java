@@ -1,11 +1,15 @@
 package com.ytdsuda.management.controller;
 
+import com.alibaba.fastjson.JSONObject;
 import com.ytdsuda.management.VO.ResultVO;
+import com.ytdsuda.management.dto.UserDTO;
 import com.ytdsuda.management.entity.User;
 import com.ytdsuda.management.repository.UserRepository;
 import com.ytdsuda.management.service.UserService;
 import com.ytdsuda.management.service.impl.BasicInfoServiceImpl;
+import com.ytdsuda.management.utils.JavaWebToken;
 import com.ytdsuda.management.utils.ObjectUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.*;
@@ -25,7 +29,8 @@ public class UserController {
     @Autowired
     private BasicInfoServiceImpl basicInfoService;
     @PostMapping("login")
-    public ResultVO login(@RequestParam(value = "userName") String name, @RequestParam(value = "password") String password) {
+    public ResultVO login(@RequestParam(value = "userName") String name,
+                          @RequestParam(value = "password") String password) {
         List<User> results = userService.findUser(name);
         ResultVO resultVO = new ResultVO();
         resultVO.setData(null);
@@ -33,13 +38,18 @@ public class UserController {
             User userResult = results.get(0);
             basicInfoService.updateStatus(userResult.getUserId());
             if (userResult.getUserPassword().equals(password)) {
-                User resultData = new User();
-                resultData.setUserName(userResult.getUserName());
-                resultData.setUserRole(userResult.getUserRole());
-                resultVO.setData(resultData);
-                resultVO.setSuccess(true);
+                UserDTO userDTO = new UserDTO();
+                BeanUtils.copyProperties(userResult, userDTO);
+                String token = JavaWebToken
+                        .createJavaWebToken((JSONObject)JSONObject.toJSON(userResult),
+                        30L * 24L * 3600L * 1000L);
+                if (token != null) {
+                    userDTO.setToken(token);
+                }
+                resultVO.setData(userDTO);
             } else {
                 resultVO.setSuccess(false);
+                resultVO.setLogin(false);
                 resultVO.setErrorMsg("用户名密码错");
             }
         }
