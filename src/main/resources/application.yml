@@ -9,6 +9,7 @@ spring:
 server:
   servlet:
     context-path: /dms
+  port: 8000
 mybatis:
   mapper-locations:
     classpath: mapper/*.xml
