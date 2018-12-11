@@ -83,6 +83,10 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+                <!--添加系统服务(用于可执行springboot插件)-->
+                <configuration>
+                    <executable>true</executable>
+                </configuration>
             </plugin>
 
             <!--自动映射-->

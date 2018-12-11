@@ -28,6 +28,8 @@ public class UserController {
     private UserRepository userRepository;
     @Autowired
     private BasicInfoServiceImpl basicInfoService;
+    @Autowired
+    private HttpSession session;
     @PostMapping("login")
     public ResultVO login(@RequestParam(value = "userName") String name,
                           @RequestParam(value = "password") String password) {
