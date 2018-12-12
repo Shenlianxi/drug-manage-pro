@@ -11,4 +11,7 @@ public interface UserService {
     List<User> findUser(String userName);
 //    修改用户信息
     User updateInfo(User user);
+//    删除用户
+    Integer deleteUser(Integer userId);
+
 }
