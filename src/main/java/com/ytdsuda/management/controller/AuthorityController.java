@@ -4,10 +4,14 @@ import com.ytdsuda.management.VO.ResultVO;
 import com.ytdsuda.management.dto.AuthorityDTO;
 import com.ytdsuda.management.entity.Authority;
 import com.ytdsuda.management.enums.AuthorityEnum;
+import com.ytdsuda.management.repository.AuthorityRepository;
+import com.ytdsuda.management.service.RoleAuthorityService;
 import com.ytdsuda.management.service.impl.AuthorityServiceImpl;
+import com.ytdsuda.management.utils.FAST;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpSession;
 import java.util.List;
 
 @RestController
@@ -15,7 +19,10 @@ import java.util.List;
 public class AuthorityController {
     @Autowired
     private AuthorityServiceImpl authorityService;
-
+    @Autowired
+    private AuthorityRepository authorityRepository;
+    @Autowired
+    private RoleAuthorityService roleAuthorityService;
     @GetMapping("getAll")
     public ResultVO getAll() {
         ResultVO resultVO = new ResultVO();
@@ -54,6 +61,40 @@ public class AuthorityController {
     public ResultVO editAuth(@RequestParam(value = "params") String params) {
         ResultVO resultVO = new ResultVO();
         System.out.println(params);
+        Authority authority = FAST.parseObject(params, Authority.class);
+        Authority result = authorityRepository.save(authority);
+        if (result != null) {
+            resultVO.setSuccess(false);
+            resultVO.setErrorMsg("添加失败");
+        } else {
+            resultVO.setData(result);
+        }
+        return resultVO;
+    }
+
+    @GetMapping("getPriority")
+    public ResultVO getPriority(@RequestParam(value = "roleId") Integer roleId) {
+        ResultVO resultVO = new ResultVO();
+        List<Authority> resultList = roleAuthorityService.findRoleAuth(roleId);
+        if (resultList != null) {
+            resultVO.setData(resultList);
+        } else {
+            resultVO.setSuccess(false);
+            resultVO.setErrorMsg(AuthorityEnum.UNDEFINED_ERROR.getMessage());
+        }
+        return resultVO;
+    }
+    @PostMapping("modify")
+    public ResultVO modify(@RequestParam(value = "roleId") Integer roleId,
+                           @RequestParam(value = "authIds") List<Integer> authIds ) {
+        ResultVO resultVO = new ResultVO();
+        List<Integer> list = roleAuthorityService.changeRoleAuth(roleId, authIds);
+        if (list != null) {
+            resultVO.setData(list);
+        } else {
+            resultVO.setSuccess(false);
+            resultVO.setErrorMsg("更新失败");
+        }
         return resultVO;
     }
 }
