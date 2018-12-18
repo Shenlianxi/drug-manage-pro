@@ -24,7 +24,6 @@ public class RoleAuthorityServiceImpl implements RoleAuthorityService {
     @Override
     public List<Authority> findRoleAuth(Integer roleId) {
 //        获取权限和角色
-//        List<Integer> roleAuthorityList = roleAuthorityRepository.findAuthIdsByAuthorityId(roleId);
         List<RoleAuthority> lists = roleAuthorityRepository.findByRoleId(roleId);
         List<Integer> roleAuthorityList = new ArrayList<>();
         lists.forEach(el -> {
