@@ -6,5 +6,5 @@ import java.util.List;
 
 public interface RoleAuthorityService {
     List<Authority> findRoleAuth(Integer roleId);
-    List<Integer> changeRoleAuth(Integer roleId, List<Integer> authIds);
+    Integer changeRoleAuth(Integer roleId, List<Integer> authIds);
 }

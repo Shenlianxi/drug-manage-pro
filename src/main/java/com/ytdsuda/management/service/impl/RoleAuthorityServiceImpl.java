@@ -2,9 +2,11 @@ package com.ytdsuda.management.service.impl;
 
 import com.ytdsuda.management.entity.Authority;
 import com.ytdsuda.management.entity.RoleAuthority;
+import com.ytdsuda.management.enums.AuthorityEnum;
 import com.ytdsuda.management.repository.AuthorityRepository;
 import com.ytdsuda.management.repository.RoleAuthorityRepository;
 import com.ytdsuda.management.service.RoleAuthorityService;
+import com.ytdsuda.management.service.UserAuthorityService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,6 +18,8 @@ public class RoleAuthorityServiceImpl implements RoleAuthorityService {
     private RoleAuthorityRepository roleAuthorityRepository;
     @Autowired
     private AuthorityRepository authorityRepository;
+    @Autowired
+    private UserAuthorityService authorityService;
 
     @Override
     public List<Authority> findRoleAuth(Integer roleId) {
@@ -39,20 +43,30 @@ public class RoleAuthorityServiceImpl implements RoleAuthorityService {
     }
 
     @Override
-    public List<Integer> changeRoleAuth(Integer roleId, List<Integer> authIds) {
+    public Integer changeRoleAuth(Integer roleId, List<Integer> authIds) {
 //        roleAuthorityRepository.deleteByRoleId(roleId);
-        List<RoleAuthority> roleAuthorityList = roleAuthorityRepository.findByRoleId(roleId);
-        roleAuthorityRepository.deleteAll(roleAuthorityList);
-        List<RoleAuthority> roleAuthorities = new ArrayList<>();
-        authIds.forEach(ele -> {
-            RoleAuthority temp = new RoleAuthority(roleId, ele);
-            roleAuthorities.add(temp);
-        });
-        List<RoleAuthority> list = roleAuthorityRepository.saveAll(roleAuthorities);
-        if (list != null) {
-            return authIds;
+        Integer authorityCode = authorityService.AuthorityCheck(roleId, 2);
+        if (authorityCode == 1) {
+//            权限pass
+            List<RoleAuthority> roleAuthorityList = roleAuthorityRepository.findByRoleId(roleId);
+            roleAuthorityRepository.deleteAll(roleAuthorityList);
+            List<RoleAuthority> roleAuthorities = new ArrayList<>();
+            authIds.forEach(ele -> {
+                RoleAuthority temp = new RoleAuthority(roleId, ele);
+                roleAuthorities.add(temp);
+            });
+            List<RoleAuthority> list = roleAuthorityRepository.saveAll(roleAuthorities);
+            if (list != null) {
+                return AuthorityEnum.AUTHOR_AVALIABLE.getCode();
+            } else {
+                return AuthorityEnum.UNDEFINED_ERROR.getCode();
+            }
         } else {
-            return null;
+            if (authorityCode == AuthorityEnum.AUTHORITY_DENY.getCode()) {
+                return 2;
+            } else {
+                return AuthorityEnum.UNDEFINED_ERROR.getCode();
+            }
         }
     }
 

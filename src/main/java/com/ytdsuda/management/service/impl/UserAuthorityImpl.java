@@ -26,8 +26,8 @@ public class UserAuthorityImpl implements UserAuthorityService {
      * */
     @Override
     public Integer AuthorityCheck(Integer id, Integer type) {
-//        Integer currentUserId = (Integer) session.getAttribute("userId");
-        Integer currentUserId = 3;
+        Integer currentUserId = Integer.parseInt(session.getAttribute("userId").toString());
+//        Integer currentUserId = 3;
         /*
          * 返回值1:可以操作, 2:权限不足, 其他1004异常错误
          * */
@@ -43,7 +43,12 @@ public class UserAuthorityImpl implements UserAuthorityService {
 //        有这个用户id
             if (currentUserId != null && opUserId != null) {
                 String opRole = operUser.getUserRole();
-                operationLevel = roleRepository.findByRoleName(opRole).getRoleLevel();
+                UserRole userRole = roleRepository.findByRoleName(opRole);
+                if (userRole != null) {
+                    operationLevel =userRole.getRoleLevel();
+                } else {
+                    return AuthorityEnum.UNDEFINED_ERROR.getCode();
+                }
             } else {
                 return AuthorityEnum.UNDEFINED_ERROR.getCode();
             }

@@ -10,7 +10,8 @@ public enum ResultEnum {
     INSERT_SUCCESS(200, "插入信息成功"),
     INSERT_FAIL(201, "插入失败"),
     DELETE_SUCCESS(300, "删除成功"),
-    DELETE_FAIL(301, "删除失败")
+    DELETE_FAIL(301, "删除失败"),
+    UNIQUE_RESULT(203, "信息重复")
     ;
     private Integer code;
     private String message;

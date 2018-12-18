@@ -23,6 +23,7 @@ public class AuthorityController {
     private AuthorityRepository authorityRepository;
     @Autowired
     private RoleAuthorityService roleAuthorityService;
+//    获取全部权限
     @GetMapping("getAll")
     public ResultVO getAll() {
         ResultVO resultVO = new ResultVO();
@@ -35,6 +36,7 @@ public class AuthorityController {
         }
         return resultVO;
     }
+//    超级管理员可以新增权限
     @PostMapping("addNew")
     public ResultVO addNew(@RequestParam(value = "name") String name,
                            @RequestParam(value = "code") String code,
@@ -56,7 +58,7 @@ public class AuthorityController {
         }
         return resultVO;
     }
-
+//编辑权限, 只有超级管理员才有
     @PostMapping("editAuth")
     public ResultVO editAuth(@RequestParam(value = "params") String params) {
         ResultVO resultVO = new ResultVO();
@@ -71,7 +73,7 @@ public class AuthorityController {
         }
         return resultVO;
     }
-
+// 获取该角色下的权限
     @GetMapping("getPriority")
     public ResultVO getPriority(@RequestParam(value = "roleId") Integer roleId) {
         ResultVO resultVO = new ResultVO();
@@ -84,16 +86,21 @@ public class AuthorityController {
         }
         return resultVO;
     }
+//    修改权限
     @PostMapping("modify")
     public ResultVO modify(@RequestParam(value = "roleId") Integer roleId,
                            @RequestParam(value = "authIds") List<Integer> authIds ) {
         ResultVO resultVO = new ResultVO();
-        List<Integer> list = roleAuthorityService.changeRoleAuth(roleId, authIds);
-        if (list != null) {
-            resultVO.setData(list);
+        Integer code = roleAuthorityService.changeRoleAuth(roleId, authIds);
+        if (code == AuthorityEnum.AUTHOR_AVALIABLE.getCode()) {
+            resultVO.setData(authIds);
         } else {
             resultVO.setSuccess(false);
-            resultVO.setErrorMsg("更新失败");
+            if (code == AuthorityEnum.AUTHORITY_DENY.getCode()) {
+                resultVO.setErrorMsg(AuthorityEnum.AUTHORITY_DENY.getMessage());
+            } else {
+                resultVO.setErrorMsg(AuthorityEnum.UNDEFINED_ERROR.getMessage());
+            }
         }
         return resultVO;
     }

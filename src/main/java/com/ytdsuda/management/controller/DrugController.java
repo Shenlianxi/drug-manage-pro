@@ -13,6 +13,8 @@ import com.ytdsuda.management.utils.KeyUtil;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
+import javax.servlet.http.HttpSession;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
@@ -28,6 +30,8 @@ public class DrugController {
     private DrugDetailRepository drugDetailRepository;
     @Autowired
     private TotalInfoServiceImpl totalInfoService;
+    @Autowired
+    HttpSession session;
     @PostMapping("insert")
     public ResultVO insert(@RequestParam(value = "name") String name,
                            @RequestParam(value = "category") String category,

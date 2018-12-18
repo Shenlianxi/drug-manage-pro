@@ -4,6 +4,8 @@ import com.alibaba.fastjson.JSONObject;
 import com.ytdsuda.management.VO.ResultVO;
 import com.ytdsuda.management.dto.UserDTO;
 import com.ytdsuda.management.entity.User;
+import com.ytdsuda.management.enums.AuthorityEnum;
+import com.ytdsuda.management.enums.ResultEnum;
 import com.ytdsuda.management.repository.UserRepository;
 import com.ytdsuda.management.service.UserService;
 import com.ytdsuda.management.service.impl.BasicInfoServiceImpl;
@@ -15,6 +17,7 @@ import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
+import javax.websocket.server.PathParam;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -78,6 +81,22 @@ public class UserController {
         return resultVO;
     }
 
+    @GetMapping("allUser")
+    public ResultVO getAll() {
+        ResultVO resultVO = new ResultVO();
+        List<User> list =  userRepository.findAll();
+        if (list != null) {
+            list.forEach(el -> {
+                el.setUserPassword(null);
+            });
+            resultVO.setData(list);
+        } else {
+            resultVO.setSuccess(false);
+            resultVO.setErrorMsg(ResultEnum.QUERY_FAIL.getMessage());
+        }
+        return resultVO;
+    }
+
     @PostMapping("saveProfile")
     public ResultVO getUser(@RequestParam(value = "nickName", required = false) String nickName,
                             @RequestParam(value = "position", required = false) String position,
@@ -121,6 +140,42 @@ public class UserController {
         } else {
             resultVO.setSuccess(false);
             resultVO.setData("检索用户失败");
+        }
+        return resultVO;
+    }
+
+    @DeleteMapping("delUser/{userId}")
+    public ResultVO delUser(@PathVariable(value = "userId") Integer userId) {
+        ResultVO resultVO = new ResultVO();
+        Integer state = userService.deleteUser(userId);
+        if (state == AuthorityEnum.AUTHOR_AVALIABLE.getCode()) {
+            resultVO.setData(userId);
+        } else {
+            resultVO.setSuccess(false);
+            if (state == AuthorityEnum.UNDEFINED_ERROR.getCode()) {
+                resultVO.setErrorMsg(AuthorityEnum.UNDEFINED_ERROR.getMessage());
+            } else {
+                resultVO.setErrorMsg(AuthorityEnum.AUTHORITY_DENY.getMessage());
+            }
+        }
+        return resultVO;
+    }
+
+    @PostMapping("add")
+    public ResultVO addUser(@RequestParam(value = "userName") String userName,
+                            @RequestParam(value = "password") String password,
+                            @RequestParam(value = "userRole") String userRole) {
+        ResultVO resultVO = new ResultVO();
+        User user = new User();
+        user.setUserName(userName);
+        user.setUserPassword(password);
+        user.setUserRole(userRole);
+        User result =  userService.save(user);
+        if (result != null) {
+            resultVO.setData(result);
+        } else {
+            resultVO.setSuccess(false);
+            resultVO.setErrorMsg("该用户已存在,请重新输入.");
         }
         return resultVO;
     }
