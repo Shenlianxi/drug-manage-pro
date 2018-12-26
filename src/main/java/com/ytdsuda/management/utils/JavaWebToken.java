@@ -56,7 +56,7 @@ public static String createJavaWebToken(JSONObject json, long maxAge) {
 
 //    验证JWT
     public static void main(String[] args){
-        Map<String, Object> ret = JavaWebToken.parserJavaWebToken("eyJhbGciOiJIUzI1NiJ9.eyJyb2xlIjpudWxsLCJnbXRDcmVhdGVkIjoxNTEwNzk0NDMyMDAwLCJyb2xlSWQiOjIsImRiTmFtZSI6bnVsbCwiaXNWYWxpZCI6bnVsbCwidG9rZW4iOm51bGwsInRlbmFudE5hbWUiOiLnm4jmlbDmmbrlupMgwrcg6IuP5bee5bu66KGM6aqM6K-BIiwidGhlbWVDb2xvciI6MCwibmFtZSI6Inl0ZGRhdGExMSIsInJvbGVOYW1lIjoi5pmu6YCa55So5oi3IiwidGVuYW50SWQiOjEsImdtdFVwZGF0ZWQiOm51bGwsImlkIjo5MiwiZXhwIjoxNTQ2MDU4ODA5fQ.mQNRMIENM8TRpp3YY6r0tvYkK5E0sELnEOUTjHS49CA");
+        Map<String, Object> ret = JavaWebToken.parserJavaWebToken("eyJhbGciOiJIUzI1NiJ9.eyJ1c2VyUGFzc3dvcmQiOiJlMTBhZGMzOTQ5YmE1OWFiYmU1NmUwNTdmMjBmODgzZSIsIm5pY2tOYW1lIjoi5pWw5o2u5aSn5L2sIiwicG9zaXRpb24iOiLmlbDmja7kuK3lv4MiLCJqb2IiOiLlvIDlj5Hlt6XnqIvluIgiLCJ1c2VyTmFtZSI6ImFkbWluIiwidXNlclJvbGUiOiLmma7pgJrnrqHnkIblkZgiLCJleHAiOjE1NDgxNzE5MzAsInVzZXJJZCI6NywiYWdlIjoyNH0.jFRrx3sdd8SywbVNzRkyBQGRlLDoSIiaWglJALWqcKs");
         for(Map.Entry<String, Object> e:ret.entrySet()){
             System.out.println(""+e.getKey()+":"+e.getValue());
         }

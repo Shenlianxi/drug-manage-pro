@@ -2,17 +2,24 @@ package com.ytdsuda.management.controller;
 
 import com.ytdsuda.management.VO.ResultVO;
 import com.ytdsuda.management.dto.AuthorityDTO;
+import com.ytdsuda.management.dto.PrivilegeDTO;
 import com.ytdsuda.management.entity.Authority;
+import com.ytdsuda.management.entity.User;
+import com.ytdsuda.management.entity.UserRole;
 import com.ytdsuda.management.enums.AuthorityEnum;
 import com.ytdsuda.management.repository.AuthorityRepository;
+import com.ytdsuda.management.repository.UserRepository;
+import com.ytdsuda.management.repository.UserRoleRepository;
 import com.ytdsuda.management.service.RoleAuthorityService;
 import com.ytdsuda.management.service.impl.AuthorityServiceImpl;
 import com.ytdsuda.management.utils.FAST;
+import com.ytdsuda.management.utils.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/authority")
@@ -23,6 +30,12 @@ public class AuthorityController {
     private AuthorityRepository authorityRepository;
     @Autowired
     private RoleAuthorityService roleAuthorityService;
+    @Autowired
+    private HttpSession session;
+    @Autowired
+    private UserRoleRepository userRoleRepository;
+    @Autowired
+    private UserRepository repository;
 //    获取全部权限
     @GetMapping("getAll")
     public ResultVO getAll() {
@@ -80,6 +93,7 @@ public class AuthorityController {
         List<Authority> resultList = roleAuthorityService.findRoleAuth(roleId);
         if (resultList != null) {
             resultVO.setData(resultList);
+//            Optional<UserRole> userRole = userRoleRepository.findById(roleId);
         } else {
             resultVO.setSuccess(false);
             resultVO.setErrorMsg(AuthorityEnum.UNDEFINED_ERROR.getMessage());
@@ -101,6 +115,29 @@ public class AuthorityController {
             } else {
                 resultVO.setErrorMsg(AuthorityEnum.UNDEFINED_ERROR.getMessage());
             }
+        }
+        return resultVO;
+    }
+//    获取用户权限
+    @GetMapping("userPrivlege")
+    public ResultVO getUserPrivlege() {
+        ResultVO resultVO = new ResultVO();
+//        获取userId
+        Integer currentUserId = Integer.parseInt(session.getAttribute("userId").toString());
+//        找到user
+        Optional<User> user = repository.findById(currentUserId);
+        String roleName = user.get().getUserRole();
+        UserRole result = userRoleRepository.findByRoleName(roleName);
+        PrivilegeDTO privilegeDTO = new PrivilegeDTO();
+        if (ObjectUtils.isNotEmpty(result)) {
+//            resultVO.setData(result);
+            privilegeDTO.setRole(result);
+            List<Authority> resultList = roleAuthorityService.findRoleAuth(result.getRoleId());
+            privilegeDTO.setCode(resultList);
+            resultVO.setData(privilegeDTO);
+        } else {
+            resultVO.setSuccess(false);
+            resultVO.setErrorMsg("查询异常");
         }
         return resultVO;
     }
